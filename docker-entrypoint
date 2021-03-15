@@ -15,6 +15,18 @@ if [ "${LOG_FILE}" == "" ]; then
     touch ${LOG_FILE}
 fi
 
+get_config_from_environtment() {
+    if [ "${CONFIG_JSON}" != "" ]; then
+        echo "${CONFIG_JSON}" >> "${HOME_DIR}/config.json"
+    elif [ "${CONFIG_TOML}" != "" ]; then
+        echo "${CONFIG_TOML}" >> "${HOME_DIR}/config.toml"
+    elif [ "${CONFIG_YML}" != "" ]; then
+        echo "${CONFIG_YML}" >> "${HOME_DIR}/config.yml"
+    elif [ "${CONFIG_YAML}" != "" ]; then
+        echo "${CONFIG_YAML}" >> "${HOME_DIR}/config.yaml"
+    fi
+}
+
 get_config() {
     if [ -f "${HOME_DIR}/config.json" ]; then
         jq 'map(.)' ${HOME_DIR}/config.json > ${HOME_DIR}/config.working.json
@@ -262,6 +274,7 @@ EOF
 ensure_docker_socket_accessible
 
 start_app() {
+    get_config_from_environtment
     get_config
     if [ -f "${HOME_DIR}/config.working.json" ]; then
         export CONFIG=${HOME_DIR}/config.working.json
